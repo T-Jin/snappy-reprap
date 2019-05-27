@@ -1,4 +1,4 @@
-$do_prerender=true;
+//$do_prerender=true;
 
 include <config.scad>
 include <GDMUtils.scad>
@@ -793,7 +793,7 @@ module z_tower_assembly_1(slidepos=0, explode=0, arrows=false)
 }
 //!z_tower_assembly_1(explode=100, arrows=true);
 //!z_tower_assembly_1() { z_sled(); rail_z_endcap(); }
-//!z_tower_assembly_1();
+z_tower_assembly_1();
 
 
 // Child 0: Left Z tower motherboard mount point.
@@ -1889,7 +1889,7 @@ module full_rendering()
 
 
 
-full_rendering();
+//full_rendering();
 
 
 // vim: noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap
