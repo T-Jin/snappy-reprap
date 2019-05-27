@@ -41,6 +41,7 @@ use <z_sled_parts.scad>
 
 
 hide_endcaps = false;
+lean_render = true;
 
 
 module xy_motor_assembly_1(explode=0, arrows=false)
@@ -48,10 +49,13 @@ module xy_motor_assembly_1(explode=0, arrows=false)
 	// view: [0, 0, 0] [225, 0, 330] 140
 	// desc: Print a drive gear with high (around 50%) infill density.  Insert a 3mm nut into the slot on the bottom of the drive gear.  Push it down the slot until the holes line up with the hole in the nut.
 	drive_gear();
-	down(explode/2-(gear_base-1)/2) {
-		right(motor_shaft_size/2+1.5) {
-			yrot(90) {
-				color("silver") metric_nut(size=set_screw_size, hole=true);
+	if (!lean_render)
+	{
+		down(explode/2-(gear_base-1)/2) {
+			right(motor_shaft_size/2+1.5) {
+				yrot(90) {
+					color("silver") metric_nut(size=set_screw_size, hole=true);
+				}
 			}
 		}
 	}
@@ -75,10 +79,13 @@ module xy_motor_assembly_2(explode=0, arrows=false)
 	// view: [0, 0, 0] [235, 0, 305] 140
 	// desc: Thread a 3mm diam (12mm long) bolt just through the inserted nut.
 	xy_motor_assembly_1();
-	up((gear_base-1)/2) {
-		right(explode/2+motor_shaft_size/2+11.5) {
-			yrot(90) {
-				color("silver") screw(screwsize=set_screw_size, screwlen=12, headsize=set_screw_size*2, headlen=set_screw_size);
+	if (!lean_render)
+	{
+		up((gear_base-1)/2) {
+			right(explode/2+motor_shaft_size/2+11.5) {
+				yrot(90) {
+					color("silver") screw(screwsize=set_screw_size, screwlen=12, headsize=set_screw_size*2, headlen=set_screw_size);
+				}
 			}
 		}
 	}
@@ -129,16 +136,19 @@ module y_motor_segment_assembly_1(explode=0, arrows=false)
 	// Stepper Motor
 	up(motor_top_z) {
 		up(explode*1.1) {
-			zrot(-90) xy_motor_assembly_3();
-			down(motor_length-3) {
-				wiring([
-					[0, 0, 0],
-					[-rail_width/2+joiner_width+5, 0, 0],
-					[-rail_width/2+joiner_width+5, -motor_rail_length/3.5-2, 5],
-					[-rail_width/1.5, -motor_rail_length/3.5-2, 5],
-					[-rail_width/1.5-10, -motor_rail_length/2-25, 0],
-					[-rail_width/1.5-30, -motor_rail_length/2-25, 0],
-				], 4, wirenum=2);
+			if (!lean_render)
+			{
+				zrot(-90) xy_motor_assembly_3();
+				down(motor_length-3) {
+					wiring([
+						[0, 0, 0],
+						[-rail_width/2+joiner_width+5, 0, 0],
+						[-rail_width/2+joiner_width+5, -motor_rail_length/3.5-2, 5],
+						[-rail_width/1.5, -motor_rail_length/3.5-2, 5],
+						[-rail_width/1.5-10, -motor_rail_length/2-25, 0],
+						[-rail_width/1.5-30, -motor_rail_length/2-25, 0],
+					], 4, wirenum=2);
+				}
 			}
 		}
 	}
@@ -162,39 +172,42 @@ module y_motor_segment_assembly_2(explode=0, arrows=false)
 
 	y_motor_segment_assembly_1();
 
-	// Limit switch
-	sw_x = motor_width/2+7+endstop_thick/2;
-	sw_y = drive_gear_diam/2+1-endstop_depth/2;
-	sw_z = motor_top_z+endstop_length/2-5;
-	fwd(explode*2+sw_y) {
-		up(sw_z) left(sw_x) xrot(90) microswitch();
-		wiring([
-			[-sw_x, 10, sw_z+8],
-			[-sw_x, 19, sw_z+8],
-			[-sw_x-2, 19, sw_z-8],
-			[-rail_width/2+joiner_width+3, 20, 4],
-			[-rail_width/2+joiner_width+3, -motor_rail_length/3.5+9, 9],
-			[-rail_width/1.5, -motor_rail_length/3.5+9, 9],
-			[-rail_width/1.5-8, -motor_rail_length/2-14, 4.5],
-			[-rail_width/1.5-30, -motor_rail_length/2-14, 4.5],
-		], 1);
-		wiring([
-			[-sw_x, 10, sw_z-8],
-			[-sw_x, 19, sw_z-8],
-			[-rail_width/2+joiner_width+5, 20, 4],
-			[-rail_width/2+joiner_width+5, -motor_rail_length/3.5+7, 9],
-			[-rail_width/1.5+2, -motor_rail_length/3.5+7, 9],
-			[-rail_width/1.5-7, -motor_rail_length/2-16, 4.5],
-			[-rail_width/1.5-30, -motor_rail_length/2-16, 4.5],
-		], 1, wirenum=1);
-	}
+	if (!lean_render)
+	{
+		// Limit switch
+		sw_x = motor_width/2+7+endstop_thick/2;
+		sw_y = drive_gear_diam/2+1-endstop_depth/2;
+		sw_z = motor_top_z+endstop_length/2-5;
+		fwd(explode*2+sw_y) {
+			up(sw_z) left(sw_x) xrot(90) microswitch();
+			wiring([
+				[-sw_x, 10, sw_z+8],
+				[-sw_x, 19, sw_z+8],
+				[-sw_x-2, 19, sw_z-8],
+				[-rail_width/2+joiner_width+3, 20, 4],
+				[-rail_width/2+joiner_width+3, -motor_rail_length/3.5+9, 9],
+				[-rail_width/1.5, -motor_rail_length/3.5+9, 9],
+				[-rail_width/1.5-8, -motor_rail_length/2-14, 4.5],
+				[-rail_width/1.5-30, -motor_rail_length/2-14, 4.5],
+			], 1);
+			wiring([
+				[-sw_x, 10, sw_z-8],
+				[-sw_x, 19, sw_z-8],
+				[-rail_width/2+joiner_width+5, 20, 4],
+				[-rail_width/2+joiner_width+5, -motor_rail_length/3.5+7, 9],
+				[-rail_width/1.5+2, -motor_rail_length/3.5+7, 9],
+				[-rail_width/1.5-7, -motor_rail_length/2-16, 4.5],
+				[-rail_width/1.5-30, -motor_rail_length/2-16, 4.5],
+			], 1, wirenum=1);
+		}
 
-	// Construction arrows.
-	if(arrows && explode>10) {
-		up(sw_z) {
-			left(sw_x) {
-				fwd(explode*1.3) {
-					zrot(-90) arrow(size=explode/3);
+		// Construction arrows.
+		if(arrows && explode>10) {
+			up(sw_z) {
+				left(sw_x) {
+					fwd(explode*1.3) {
+						zrot(-90) arrow(size=explode/3);
+					}
 				}
 			}
 		}
@@ -371,9 +384,12 @@ module y_axis_assembly_7(slidepos=0, explode=0, arrows=false)
 	// desc: Optionally join a rail endcap to each end of the Y axis.
 	platform_vert_off = rail_height+groove_height/2;
 
-	zrot(90) zring(r=(motor_rail_length+2*rail_length+3*explode)/2) {
-		if (hide_endcaps == false) {
-			zrot(90) rail_y_endcap();
+	if (!lean_render)
+	{
+		zrot(90) zring(r=(motor_rail_length+2*rail_length+3*explode)/2) {
+			if (hide_endcaps == false) {
+				zrot(90) rail_y_endcap();
+			}
 		}
 	}
 	y_axis_assembly_6(slidepos=slidepos) {
@@ -401,18 +417,21 @@ module x_motor_segment_assembly_1(explode=0, arrows=false)
 
 	rail_xy_motor_segment();
 
-	// Stepper Motor
-	up(motor_top_z) {
-		up(explode*1.1) {
-			zrot(-90) xy_motor_assembly_3();
-			down(motor_length-3) {
-				wiring([
-					[0, 0, 0],
-					[-rail_width/2+joiner_width+20, 0, 0],
-					[-rail_width/2+joiner_width+20, -motor_rail_length/3.5-4, 5],
-					[0, -motor_rail_length/3.5-4, 5],
-					[0, -motor_rail_length/2-20, 5],
-				], 4, wirenum=2);
+	if (!lean_render)
+	{
+		// Stepper Motor
+		up(motor_top_z) {
+			up(explode*1.1) {
+				zrot(-90) xy_motor_assembly_3();
+				down(motor_length-3) {
+					wiring([
+						[0, 0, 0],
+						[-rail_width/2+joiner_width+20, 0, 0],
+						[-rail_width/2+joiner_width+20, -motor_rail_length/3.5-4, 5],
+						[0, -motor_rail_length/3.5-4, 5],
+						[0, -motor_rail_length/2-20, 5],
+					], 4, wirenum=2);
+				}
 			}
 		}
 	}
@@ -436,36 +455,39 @@ module x_motor_segment_assembly_2(explode=0, arrows=false)
 
 	x_motor_segment_assembly_1();
 
-	// Limit switch
-	sw_x = motor_width/2+7+endstop_thick/2;
-	sw_y = drive_gear_diam/2+1-endstop_depth/2;
-	sw_z = motor_top_z+endstop_length/2-5;
-	fwd(explode*2+sw_y) {
-		up(sw_z) left(sw_x) xrot(90) microswitch();
-		wiring([
-			[-sw_x, 10, sw_z-8],
-			[-sw_x-1, 18, sw_z-8],
-			[-sw_x-1, 19, 10],
-			[-sw_x-1, -motor_rail_length/3.5-5+sw_y, 10],
-			[1, -motor_rail_length/3.5-5+sw_y, 10],
-			[1, -motor_rail_length/2-20+sw_y, 10],
-		], 1);
-		wiring([
-			[-sw_x, 10, sw_z+8],
-			[-sw_x-3, 18, sw_z+8],
-			[-sw_x-3, 19, 10],
-			[-sw_x-3, -motor_rail_length/3.5-5+sw_y-2, 10],
-			[-1, -motor_rail_length/3.5-5+sw_y-2, 10],
-			[-1, -motor_rail_length/2-20+sw_y, 10],
-		], 1, wirenum=1);
-	}
+	if (!lean_render)
+	{
+		// Limit switch
+		sw_x = motor_width/2+7+endstop_thick/2;
+		sw_y = drive_gear_diam/2+1-endstop_depth/2;
+		sw_z = motor_top_z+endstop_length/2-5;
+		fwd(explode*2+sw_y) {
+			up(sw_z) left(sw_x) xrot(90) microswitch();
+			wiring([
+				[-sw_x, 10, sw_z-8],
+				[-sw_x-1, 18, sw_z-8],
+				[-sw_x-1, 19, 10],
+				[-sw_x-1, -motor_rail_length/3.5-5+sw_y, 10],
+				[1, -motor_rail_length/3.5-5+sw_y, 10],
+				[1, -motor_rail_length/2-20+sw_y, 10],
+			], 1);
+			wiring([
+				[-sw_x, 10, sw_z+8],
+				[-sw_x-3, 18, sw_z+8],
+				[-sw_x-3, 19, 10],
+				[-sw_x-3, -motor_rail_length/3.5-5+sw_y-2, 10],
+				[-1, -motor_rail_length/3.5-5+sw_y-2, 10],
+				[-1, -motor_rail_length/2-20+sw_y, 10],
+			], 1, wirenum=1);
+		}
 
-	// Construction arrows.
-	if(arrows && explode>10) {
-		up(sw_z) {
-			left(sw_x) {
-				fwd(explode*1.3) {
-					zrot(-90) arrow(size=explode/3);
+		// Construction arrows.
+		if(arrows && explode>10) {
+			up(sw_z) {
+				left(sw_x) {
+					fwd(explode*1.3) {
+						zrot(-90) arrow(size=explode/3);
+					}
 				}
 			}
 		}
@@ -486,12 +508,15 @@ module x_axis_assembly_1(slidepos=0, explode=0, arrows=false)
 		zrot(90) rail_segment();
 	}
 
-	up(12) {
-		wiring([
-			[-motor_rail_length/2, 0, 0],
-			[-(rail_length+explode), 0, 0],
-			[-(rail_length+explode+motor_rail_length/2)-30, 0, 0],
-		], 6);
+	if (!lean_render)
+	{
+		up(12) {
+			wiring([
+				[-motor_rail_length/2, 0, 0],
+				[-(rail_length+explode), 0, 0],
+				[-(rail_length+explode+motor_rail_length/2)-30, 0, 0],
+			], 6);
+		}
 	}
 
 	// Construction arrows.
@@ -548,12 +573,14 @@ module x_axis_assembly_3(explode=0, arrows=false)
 	// desc: Join the X sled cable-chain mount to the front/left side of the X sled endstop.
 	up(groove_height/2+rail_offset) {
 		left(explode/2) {
-			zrot(-90) xy_joiner();
+			if (!lean_render)
+				zrot(-90) xy_joiner();
 			right(explode*1.25+0.3) {
 				fwd((platform_width-joiner_width)/2) {
 					zrot(90) {
 						//cable_chain_xy_joiner_mount();
-						cable_chain_x_sled_mount();
+						if (!lean_render)
+							cable_chain_x_sled_mount();
 					}
 				}
 			}
@@ -656,7 +683,8 @@ module x_axis_assembly_7(xslidepos=0, yslidepos=0, explode=0, arrows=false)
 		if ($children>1) children(1); else nil();
 		right(platform_length+0.5+explode*3) {
 			up(groove_height/2+rail_offset) {
-				zrot(90) xy_joiner();
+				if (!lean_render)
+					zrot(90) xy_joiner();
 			}
 
 			// Construction arrows.
@@ -691,7 +719,8 @@ module x_axis_assembly_8(xslidepos=0, yslidepos=0, explode=0, arrows=false)
 				}
 			}
 			fwd(explode/2) {
-				zrot(90) cable_chain_joiner_mount();
+				if (!lean_render)
+					zrot(90) cable_chain_joiner_mount();
 			}
 		}
 	}
@@ -709,53 +738,56 @@ module x_axis_assembly_9(xslidepos=0, yslidepos=0, explode=0, arrows=false)
 		if ($children>1) children(1); else nil();
 		if ($children>2) children(2);
 	}
-	vert_off = rail_height + groove_height + rail_offset + cable_chain_height/2;
-	left(explode*1.5) {
-		fwd(platform_width/2+cable_chain_width/2+2) {
-			fwd(15) {
-				// Construction arrows.
-				if(arrows && explode>75) {
-					left(platform_length+explode/6) {
-						up(vert_off) zrot(180) arrow(size=explode/3);
-					}
-					left(side_mount_spacing/2+explode/6) {
-						up(cable_chain_height/2) zrot(180) arrow(size=explode/3);
+	if (!lean_render)
+	{
+		vert_off = rail_height + groove_height + rail_offset + cable_chain_height/2;
+		left(explode*1.5) {
+			fwd(platform_width/2+cable_chain_width/2+2) {
+				fwd(15) {
+					// Construction arrows.
+					if(arrows && explode>75) {
+						left(platform_length+explode/6) {
+							up(vert_off) zrot(180) arrow(size=explode/3);
+						}
+						left(side_mount_spacing/2+explode/6) {
+							up(cable_chain_height/2) zrot(180) arrow(size=explode/3);
+						}
 					}
 				}
+				left(explode/2) {
+					cable_chain_assembly(
+						[-platform_length-1, 0, vert_off],
+						[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3, 0, cable_chain_height/2],
+						[-1,0,0],
+						platform_length*2,
+						xslidepos,
+						wires=6
+					);
+				}
 			}
-			left(explode/2) {
-				cable_chain_assembly(
+		}
+		if (explode>0) {
+			fwd(platform_width/2+cable_chain_width/2+2) {
+				wiring([
+					[-platform_length-1-explode*2, 0, vert_off],
+					[-platform_length-1-explode, 0, vert_off],
 					[-platform_length-1, 0, vert_off],
+				], 6);
+				wiring([
+					[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3-explode*2, 0, cable_chain_height/2],
+					[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3-explode, 0, cable_chain_height/2],
 					[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3, 0, cable_chain_height/2],
-					[-1,0,0],
-					platform_length*2,
-					xslidepos,
-					wires=6
-				);
+				], 6);
 			}
 		}
+		wiring([
+			[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3, -(platform_width/2+cable_chain_width/2+2), cable_chain_height/2],
+			[-motor_rail_length/3+10, -(platform_width/2+cable_chain_width/2+2), cable_chain_height/2],
+			[-motor_rail_length/3+5, -(rail_width/2+joiner_width/2), rail_thick+5],
+			[-motor_rail_length/3+5, -rail_width/3, rail_thick+5],
+			[-rail_length-motor_rail_length/2-30, -rail_width/3, rail_thick+5],
+		], 6);
 	}
-	if (explode>0) {
-		fwd(platform_width/2+cable_chain_width/2+2) {
-			wiring([
-				[-platform_length-1-explode*2, 0, vert_off],
-				[-platform_length-1-explode, 0, vert_off],
-				[-platform_length-1, 0, vert_off],
-			], 6);
-			wiring([
-				[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3-explode*2, 0, cable_chain_height/2],
-				[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3-explode, 0, cable_chain_height/2],
-				[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3, 0, cable_chain_height/2],
-			], 6);
-		}
-	}
-	wiring([
-		[-side_mount_spacing/2-cable_chain_length/2+cable_chain_height/3, -(platform_width/2+cable_chain_width/2+2), cable_chain_height/2],
-		[-motor_rail_length/3+10, -(platform_width/2+cable_chain_width/2+2), cable_chain_height/2],
-		[-motor_rail_length/3+5, -(rail_width/2+joiner_width/2), rail_thick+5],
-		[-motor_rail_length/3+5, -rail_width/3, rail_thick+5],
-		[-rail_length-motor_rail_length/2-30, -rail_width/3, rail_thick+5],
-	], 6);
 }
 //!x_axis_assembly_9(xslidepos=0, yslidepos=0, explode=100, arrows=true);
 //!x_axis_assembly_9(xslidepos=platform_length*sin($t*360), yslidepos=0, explode=0, arrows=false);
@@ -793,7 +825,7 @@ module z_tower_assembly_1(slidepos=0, explode=0, arrows=false)
 }
 //!z_tower_assembly_1(explode=100, arrows=true);
 //!z_tower_assembly_1() { z_sled(); rail_z_endcap(); }
-z_tower_assembly_1();
+//!z_tower_assembly_1();
 
 
 // Child 0: Left Z tower motherboard mount point.
@@ -808,7 +840,8 @@ module z_tower_assembly_2(explode=0, arrows=false)
 	right(platform_length/3) {
 		zrot_copies([0,180]) {
 			back(rail_width/2+14+explode) {
-				zrot(0) support_leg();
+				if (!lean_render)
+					zrot(0) support_leg();
 			}
 		}
 	}
@@ -907,7 +940,8 @@ module z_tower_assembly_5(slidepos=0, explode=0, arrows=false)
 	left(platform_length) {
 		fwd(z_joiner_spacing/2+7+explode) {
 			up(rail_height+groove_height+z_base_height+rail_length-11) {
-				yrot(90) zrot(90) cable_chain_joiner_mount();
+				if (!lean_render)
+					yrot(90) zrot(90) cable_chain_joiner_mount();
 			}
 		}
 	}
@@ -1034,10 +1068,12 @@ module extruder_assembly_5(explode=0, arrows=false)
 	up(jhead_groove_thick+jhead_shelf_thick+motor_width/2+explode*2) {
 		fwd(extruder_drive_diam/2-0.5) {
 			left(extruder_shaft_len/2-0.05) {
-				extruder_assembly_3();
+				if (!lean_render)
+					extruder_assembly_3();
 				left(motor_length/2) {
 					up(explode*2) {
-						zrot(-90) extruder_motor_clip();
+						if (!lean_render)
+							zrot(-90) extruder_motor_clip();
 					}
 				}
 			}
@@ -1071,7 +1107,8 @@ module extruder_assembly_6(explode=0, arrows=false)
 	extruder_assembly_5();
 	up(jhead_groove_thick+jhead_shelf_thick+motor_width/2) {
 		right(explode*2) {
-			extruder_assembly_2();
+			if (!lean_render)
+				extruder_assembly_2();
 		}
 	}
 
@@ -1096,7 +1133,8 @@ module extruder_assembly_7(explode=0, arrows=false)
 	extruder_assembly_6();
 	up(jhead_groove_thick+jhead_shelf_thick+motor_width/2) {
 		back(30+20.1+explode*1.5) {
-			xrot(90) compression_screw();
+			if (!lean_render)
+				xrot(90) compression_screw();
 		}
 	}
 
@@ -1122,7 +1160,8 @@ module extruder_assembly_8(explode=0, arrows=false)
 	extruder_assembly_7();
 	right(extruder_length/4) {
 		up(jhead_groove_thick+0.05+explode*2) {
-			extruder_fan_shroud() children();
+			if (!lean_render)
+				extruder_fan_shroud() children();
 		}
 	}
 
@@ -1150,26 +1189,29 @@ module extruder_assembly_9(explode=0, arrows=false)
 		up(jhead_groove_thick+jhead_shelf_thick+0.05) {
 			up(explode) {
 				up(explode/2) {
-					cooling_fan();
-					translate([-(extruder_fan_size/2-5), 0, extruder_fan_thick/4]) {
-						wiring([
-							[0, extruder_fan_size/2, 0],
-							[0, extruder_fan_size/2+10, 0],
-							[-10, rail_width/3+5, 0],
-							[-30, rail_width/3+5, 0],
-							[-76, rail_width/3-5, 0],
-							[-76, 0, 0],
-							[-95, 0, 0],
-						], 2, fillet=5, wirenum=4);
-					}
-					up(12-extruder_fan_thick+2+0.05+explode/2) {
-						up(explode/2) {
-							zrot(90) extruder_fan_clip();
+					if (!lean_render)
+					{
+						cooling_fan();
+						translate([-(extruder_fan_size/2-5), 0, extruder_fan_thick/4]) {
+							wiring([
+								[0, extruder_fan_size/2, 0],
+								[0, extruder_fan_size/2+10, 0],
+								[-10, rail_width/3+5, 0],
+								[-30, rail_width/3+5, 0],
+								[-76, rail_width/3-5, 0],
+								[-76, 0, 0],
+								[-95, 0, 0],
+							], 2, fillet=5, wirenum=4);
 						}
+						up(12-extruder_fan_thick+2+0.05+explode/2) {
+							up(explode/2) {
+								zrot(90) extruder_fan_clip();
+							}
 
-						// Construction arrows.
-						if (arrows && explode>50) {
-							yrot(-90) arrow(size=0.75*explode/3);
+							// Construction arrows.
+							if (arrows && explode>50) {
+								yrot(-90) arrow(size=0.75*explode/3);
+							}
 						}
 					}
 				}
@@ -1253,15 +1295,18 @@ module bridge_assembly_1(explode=0, arrows=false)
 			}
 		}
 	}
-	up(rail_thick+4) {
-		left(extruder_length/2+rail_length/2+explode) {
-			arch_off = (rail_length-20)*sin(bridge_arch_angle);
-			wiring([
-				[rail_length/2+explode, 0, 0],
-				[0, 0, -arch_off/2],
-				[-(motor_rail_length/2-32), -z_joiner_spacing/3, -arch_off],
-				[-(motor_rail_length/2-32), -(z_joiner_spacing/2+5), -arch_off],
-			], 12);
+	if (!lean_render)
+	{
+		up(rail_thick+4) {
+			left(extruder_length/2+rail_length/2+explode) {
+				arch_off = (rail_length-20)*sin(bridge_arch_angle);
+				wiring([
+					[rail_length/2+explode, 0, 0],
+					[0, 0, -arch_off/2],
+					[-(motor_rail_length/2-32), -z_joiner_spacing/3, -arch_off],
+					[-(motor_rail_length/2-32), -(z_joiner_spacing/2+5), -arch_off],
+				], 12);
+			}
 		}
 	}
 
@@ -1283,18 +1328,21 @@ module bridge_assembly_2(explode=0, arrows=false)
 	// view: [0, 0, 18] [55, 0, 25] 2100
 	// desc: Attach a vertical cable-chain mount to the front left side of the extruder bridge.
 	bridge_assembly_1();
-	left(extruder_length/2) {
-		up(rail_height/2) {
-			yrot(-bridge_arch_angle) {
-				down(rail_height/2) {
-					left(rail_length-10) {
-						fwd(z_joiner_spacing/2+7+explode) {
-							fwd(explode) zrot(90) cable_chain_joiner_vertical_mount();
+	if (!lean_render)
+	{
+		left(extruder_length/2) {
+			up(rail_height/2) {
+				yrot(-bridge_arch_angle) {
+					down(rail_height/2) {
+						left(rail_length-10) {
+							fwd(z_joiner_spacing/2+7+explode) {
+								fwd(explode) zrot(90) cable_chain_joiner_vertical_mount();
 
-							// Construction arrows.
-							if(arrows && explode>50) {
-								up(rail_height/4) {
-									zrot(-90) arrow(size=explode/3);
+								// Construction arrows.
+								if(arrows && explode>50) {
+									up(rail_height/4) {
+										zrot(-90) arrow(size=explode/3);
+									}
 								}
 							}
 						}
@@ -1328,7 +1376,7 @@ module bridge_assembly_3(explode=0, arrows=false)
 	}
 }
 //!bridge_assembly_3(explode=100, arrows=true);
-//!bridge_assembly_3();
+bridge_assembly_3();
 
 
 module bridge_assembly_4(slidepos=0, explode=0, arrows=false)

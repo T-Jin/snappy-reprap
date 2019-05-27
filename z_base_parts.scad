@@ -9,7 +9,7 @@ $fs=2;
 // connectby valid options: "", "fwd", "back"
 module z_base(explode=0, connectby="")
 {
-	coupler_len = lifter_coupler_len;
+	coupler_len = 20;
 	side_joiner_len = 5;
 	wall_thick = 3;
 	l = z_base_height;

@@ -76,20 +76,20 @@ module jhead_hotend()
 				xrot(90) cylinder(h=jhead_block_size[0]+1, d=6, center=true);
 			}
 		}
-		down((jhead_length+block_h)/2) {
-			wiring([
-				[-(jhead_block_off+1), jhead_block_size[0]/2-2, 0],
-				[-(jhead_block_off+1), jhead_block_size[0]/2+5, 0],
-				[-extruder_length/4, -1, jhead_length+2],
-				[-extruder_length/2, -1, jhead_length+2],
-			], 2, fillet=8);
-			wiring([
-				[0, jhead_block_size[0]/2-2, 0],
-				[0, jhead_block_size[0]/2+5, 0],
-				[-extruder_length/4, -3, jhead_length+2],
-				[-extruder_length/2, -3, jhead_length+2],
-			], 2, fillet=8, wirenum=2);
-		}
+		//down((jhead_length+block_h)/2) {
+		//	wiring([
+		//		[-(jhead_block_off+1), jhead_block_size[0]/2-2, 0],
+		//		[-(jhead_block_off+1), jhead_block_size[0]/2+5, 0],
+		//		[-extruder_length/4, -1, jhead_length+2],
+		//		[-extruder_length/2, -1, jhead_length+2],
+		//	], 2, fillet=8);
+		//	wiring([
+		//		[0, jhead_block_size[0]/2-2, 0],
+		//		[0, jhead_block_size[0]/2+5, 0],
+		//		[-extruder_length/4, -3, jhead_length+2],
+		//		[-extruder_length/2, -3, jhead_length+2],
+		//	], 2, fillet=8, wirenum=2);
+		//}
 	}
 	color("silver")
 	up(jhead_groove_thick+jhead_shelf_thick) {
