@@ -148,7 +148,7 @@ cantilever_length = (motor_rail_length + 2*platform_length - 2*rail_height - ext
 motor_top_z = rail_height + groove_height - rack_height/2 - gear_base - 2;
 lifter_tooth_depth = lifter_screw_pitch / 3.2;
 z_joiner_spacing = lifter_screw_diam + 2*lifter_tooth_depth + joiner_width;
-z_base_height = rail_height + groove_height + 2*platform_thick;
+z_base_height = rail_height + groove_height + 2*platform_thick + 20;
 adjust_thread_depth = adjust_screw_pitch/3.2;
 drive_gear_diam = (gear_teeth+2)*rack_tooth_size/pi;
 

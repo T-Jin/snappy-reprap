@@ -7,7 +7,7 @@ $fa=2;
 $fs=2;
 
 // connectby valid options: "", "fwd", "back"
-module z_base(explode=0, connectby="")
+module z_base(explode=0, connectby="", show_motor=false)
 {
 	coupler_len = 20;
 	side_joiner_len = 5;
@@ -240,6 +240,13 @@ module z_base(explode=0, connectby="")
 				}
 			}
 		}
+	}
+	if (show_motor)
+	{
+		back(l/2 - wall_thick/2 -coupler_len)
+		up(rail_height+groove_height/2)
+		xrot(-90)
+		nema17_stepper(h=motor_length, shaft_len=motor_shaft_length);
 	}
 }
 //!z_base();

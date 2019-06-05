@@ -38,6 +38,7 @@ use <yz_joiner_parts.scad>
 use <z_base_parts.scad>
 use <z_rail_parts.scad>
 use <z_sled_parts.scad>
+use <lifter_rod_coupler_parts.scad>
 
 
 hide_endcaps = false;
@@ -657,9 +658,9 @@ module x_axis_assembly_6(xslidepos=0, yslidepos=0, explode=0, arrows=false)
 			if ($children>2) children(2); else nil();
 			up(groove_height/2+rail_offset) {
 				// TJ: hide x and y platform
-				//y_axis_assembly_7(slidepos=yslidepos) {
-				//	if ($children>3) children(3);
-				//}
+				y_axis_assembly_7(slidepos=yslidepos) {
+					if ($children>3) children(3);
+				}
 			}
 
 			// Construction arrows.
@@ -873,7 +874,21 @@ module z_tower_assembly_3(slidepos=0, explode=0, arrows=false)
 			if ($children > 0) children(0);
 		}
 		up(rail_height+groove_height+z_base_height/2+explode) {
-			yrot(90) zrot(90) z_base();
+			yrot(90) zrot(90) z_base(show_motor=true);
+			
+			right(rail_height+groove_height/2)
+			up(motor_length)
+			{
+				up(lifter_rod_length/2)
+				color("Gray")
+				acme_threaded_rod(
+					d=lifter_rod_diam+2*printer_slop,
+					l=lifter_rod_length,
+					pitch=lifter_rod_pitch,
+					thread_depth=lifter_rod_pitch/4
+				);
+				lifter_rod_coupler();
+			}
 		}
 
 		// Construction arrows.
@@ -1384,9 +1399,9 @@ module bridge_assembly_4(slidepos=0, explode=0, arrows=false)
 {
 	// view: [0, 0, 18] [55, 0, 25] 2100
 	// desc: Press fit the lifter screw onto the stepper motor shaft, making sure the flatted side matches that on the lifter screw shaft hole.  (The hole on the lifter screw rim is aligned with the flatted side.)  Apply mineral oil to the screw threads for lubrication.
+	//nema17_stepper(h=motor_length, shaft_len=motor_shaft_length, $fa=1, $fs=0.5);
 	if (!lean_render)
 	{
-		nema17_stepper(h=motor_length, shaft_len=motor_shaft_length, $fa=1, $fs=0.5);
 		up(explode+lifter_screw_thick+5.05) {
 			zrot(-360*slidepos/lifter_screw_pitch-90) {
 				yrot(180) lifter_screw();
@@ -1412,13 +1427,13 @@ module bridge_assembly_5(slidepos=0, explode=0, arrows=false)
 	motor_width = nema_motor_width(17)+printer_slop*2;
 	arch_offset = rail_length*sin(bridge_arch_angle);
 	bridge_assembly_3();
-	if (!lean_render)
-	{
-		down(explode*3-1) {
-			zring(r=(extruder_length+2*rail_length+2*cantilever_length)/2, n=2) {
-				xrot(180) zrot(-90) bridge_assembly_4(slidepos=slidepos);
-			}
 
+	down(explode*3-1) {
+		zring(r=(extruder_length+2*rail_length+2*cantilever_length)/2, n=2) {
+			xrot(180) zrot(-90) bridge_assembly_4(slidepos=slidepos);
+		}
+		if (!lean_render)
+		{
 			motor_spread = extruder_length + 2*rail_length + 2*cantilever_length - motor_width;
 			wiring([
 				[-motor_spread/2, 0, motor_length-5],
@@ -1729,7 +1744,7 @@ module final_assembly_4(xslidepos=0, yslidepos=0, zslidepos=0, explode=0, arrows
 	}
 }
 //!final_assembly_4(explode=100, arrows=true);
-final_assembly_4();
+//!final_assembly_4(zslidepos=-80);
 
 
 // Child 0: Left Z tower motherboard mount point.
@@ -1746,53 +1761,56 @@ module final_assembly_5(xslidepos=0, yslidepos=0, zslidepos=85, explode=0, arrow
 		if ($children > 2) children(2);
 		if ($children > 3) children(3);
 	}
-	vert_off = rail_height + groove_height/2 + cantilever_length + cable_chain_height/2;
-	up(2*explode+rail_height+groove_height+z_base_height+rail_length) {
-		left(motor_rail_length/2+rail_length+platform_length) {
-			fwd(z_joiner_spacing/2+joiner_width+23.5) {
-				yrot(90) {
-					up(cable_chain_height/2) {
-						cable_chain_assembly(
-							[-cable_chain_length/2-cable_chain_height/4-1, 0, vert_off],
-							[0, 0, 0],
-							[-1, 0, 0],
-							2*rail_length,
-							zslidepos,
-							wires=20
-						);
-					}
-				}
-				right(cable_chain_height/2) {
-					wiring([
-						[0, 0, 0],
-						[0, 0.01, -explode*2-cable_chain_length/2],
-						[rail_thick-1, 0, -explode*2-cable_chain_length-5],
-						[rail_thick-1, 45, -explode*2-cable_chain_length-5],
-						[rail_thick-1, 45.01, -explode*2-cable_chain_length-rail_length-10],
-						[-15, 45, -explode*2-cable_chain_length-rail_length-25],
-						[-15, 55, -explode*2-cable_chain_length-rail_length-40],
-						[-15, 55.01, -explode*2-cable_chain_length-rail_length-motor_rail_length],
-					], 20);
-					right(vert_off) {
-						up(cable_chain_length/2+zslidepos) {
-							wiring([
+	if (!lean_render)
+	{
+		vert_off = rail_height + groove_height/2 + cantilever_length + cable_chain_height/2;
+		up(2*explode+rail_height+groove_height+z_base_height+rail_length) {
+			left(motor_rail_length/2+rail_length+platform_length) {
+				fwd(z_joiner_spacing/2+joiner_width+23.5) {
+					yrot(90) {
+						up(cable_chain_height/2) {
+							cable_chain_assembly(
+								[-cable_chain_length/2-cable_chain_height/4-1, 0, vert_off],
 								[0, 0, 0],
-								[0.01, 0, -explode*2-cable_chain_length/2-10],
-								[20, 0, -explode*2-cable_chain_length/2-10],
-								[20, 15, -explode*2-cable_chain_length/2+15],
-								[20, 30, -explode*2-cable_chain_length/2+15],
-							], 20);
+								[-1, 0, 0],
+								2*rail_length,
+								zslidepos,
+								wires=20
+							);
 						}
 					}
-				}
-				// Construction arrows.
-				if(arrows && explode>50) {
-					down(explode) {
-						fwd(15) {
-							yrot(-90) arrow(size=explode/2);
-							right(vert_off) {
-								up(zslidepos) {
-									yrot(-90) arrow(size=explode/2);
+					right(cable_chain_height/2) {
+						wiring([
+							[0, 0, 0],
+							[0, 0.01, -explode*2-cable_chain_length/2],
+							[rail_thick-1, 0, -explode*2-cable_chain_length-5],
+							[rail_thick-1, 45, -explode*2-cable_chain_length-5],
+							[rail_thick-1, 45.01, -explode*2-cable_chain_length-rail_length-10],
+							[-15, 45, -explode*2-cable_chain_length-rail_length-25],
+							[-15, 55, -explode*2-cable_chain_length-rail_length-40],
+							[-15, 55.01, -explode*2-cable_chain_length-rail_length-motor_rail_length],
+						], 20);
+						right(vert_off) {
+							up(cable_chain_length/2+zslidepos) {
+								wiring([
+									[0, 0, 0],
+									[0.01, 0, -explode*2-cable_chain_length/2-10],
+									[20, 0, -explode*2-cable_chain_length/2-10],
+									[20, 15, -explode*2-cable_chain_length/2+15],
+									[20, 30, -explode*2-cable_chain_length/2+15],
+								], 20);
+							}
+						}
+					}
+					// Construction arrows.
+					if(arrows && explode>50) {
+						down(explode) {
+							fwd(15) {
+								yrot(-90) arrow(size=explode/2);
+								right(vert_off) {
+									up(zslidepos) {
+										yrot(-90) arrow(size=explode/2);
+									}
 								}
 							}
 						}
@@ -1853,8 +1871,8 @@ module final_assembly_7(xslidepos=0, yslidepos=0, zslidepos=0, explode=0, arrows
 	// desc: Attach the RAMPS motherboard mount to the end of the printer base.
 	final_assembly_6(xslidepos=xslidepos, yslidepos=yslidepos, zslidepos=zslidepos) {
 		fwd(explode*2) {
-			ramps_mount();
-
+			if (!lean_render)
+				ramps_mount();
 			// Construction arrows.
 			if(arrows && explode>50) {
 				back(explode*1.0) {
@@ -1864,10 +1882,10 @@ module final_assembly_7(xslidepos=0, yslidepos=0, zslidepos=0, explode=0, arrows
 				}
 			}
 		}
-		if ($children > 0) children(0);
-		if ($children > 1) children(1);
-		if ($children > 2) children(2);
 	}
+	if ($children > 0) children(0);
+	if ($children > 1) children(1);
+	if ($children > 2) children(2);
 }
 //!final_assembly_7(explode=100, arrows=true);
 //!final_assembly_7();
@@ -1892,7 +1910,7 @@ module final_assembly_8(xslidepos=0, yslidepos=0, zslidepos=80, explode=0, arrow
 				}
 			}
 
-			build_platform();
+			//build_platform();
 		}
 
 		if ($children > 1) children(1);
@@ -1908,10 +1926,13 @@ module final_assembly_9(xslidepos=0, yslidepos=0, zslidepos=0, explode=0, arrows
 	// desc: Cradle the spool axle in the spool holder top.
 	final_assembly_8(xslidepos=xslidepos, yslidepos=yslidepos, zslidepos=zslidepos) {
 		nil();
-		up(explode) {
-			spool_axle();
-			if (!(arrows && explode>50)) {
-				down(52.5/2-14) spool();
+		if (!lean_render)
+		{
+			up(explode) {
+				spool_axle();
+				if (!(arrows && explode>50)) {
+					down(52.5/2-14) spool();
+				}
 			}
 		}
 	}
@@ -1946,14 +1967,14 @@ module full_rendering()
 {
 	xpos = 100*cos(360*$t+120);
 	ypos = 100*sin(360*$t+120);
-	zpos = 0.65*(rail_length-rail_height/2)*cos(360*$t);
+	//zpos = -1.*(rail_length-rail_height/2)*cos(360*$t);
+	zmin = -100;
+	zmax = 90;
+	zpos = zmin;
 
 	final_assembly_9(xslidepos=xpos, yslidepos=ypos, zslidepos=zpos);
 }
 
-
-
-//full_rendering();
-
+full_rendering();
 
 // vim: noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap

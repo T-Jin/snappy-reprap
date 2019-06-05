@@ -16,6 +16,8 @@ module z_sled(explode=0, arrows=false)
 	slider_width = 12;
 	thread_depth = lifter_rod_pitch/3.2;
 	pitch = lifter_rod_pitch;
+	arch_offset = rail_length * (1-cos(bridge_arch_angle));
+	extra_offset = rail_height/2 * tan(bridge_arch_angle);
 
 	color("MediumSlateBlue")
 	prerender(convexity=10)
@@ -32,6 +34,16 @@ module z_sled(explode=0, arrows=false)
 								down(socket_h/2) {
 									yspread(lifter_rod_diam*1.5-rail_thick) {
 										upcube([cantilever_length - platform_thick/2, rail_thick, socket_h]);
+									}
+								}
+							}
+
+							right((cantilever_length - platform_thick/2)/2) {
+								down(socket_h/2) {
+									right(12) {
+										yspread(70) {
+											upcube([cantilever_length - platform_thick/2, rail_thick, socket_h]);
+										}
 									}
 								}
 							}
@@ -59,21 +71,25 @@ module z_sled(explode=0, arrows=false)
 								}
 							}
 						}
-						acme_threaded_rod(d=lifter_rod_diam+5*printer_slop, l=socket_h+0.1, thread_depth=thread_depth, pitch=pitch, thread_angle=lifter_rod_angle);
-						if (socket_h > 3*pitch + 2 * thread_depth) {
-							chamf_cyl(d=lifter_rod_diam+4, h=socket_h-3*pitch+2*thread_depth, chamfer=thread_depth+2, center=true);
-						}
-						zflip_copy() {
-							down(socket_h/2+0.01) {
-								cylinder(d1=lifter_rod_diam, d2=lifter_rod_diam-2*thread_depth, h=thread_depth, center=false);
-							}
-						}
+						acme_threaded_rod(
+							d=lifter_rod_diam+2*printer_slop, 
+							l=socket_h+0.1, 
+							pitch=pitch, 
+							thread_depth=lifter_rod_pitch/4);
+						//if (socket_h > 3*pitch + 2 * thread_depth) {
+						//	chamf_cyl(d=lifter_rod_diam+4, h=socket_h-3*pitch+2*thread_depth, chamfer=thread_depth+2, center=true);
+						//}
+						//zflip_copy() {
+						//	down(socket_h/2+0.01) {
+						//		cylinder(d1=lifter_rod_diam, d2=lifter_rod_diam-2*thread_depth, h=thread_depth, center=false);
+						//	}
+						//}
 					}
 				}
 			}
 
 			// Angle front of supports
-			right(cantilever_length-rail_thick/2-10) {
+			right(cantilever_length-rail_thick/2-10 + extra_offset) {
 				yrot(-bridge_arch_angle) {
 					right(rail_height*1.5) {
 						cube(rail_height*3, center=true);
@@ -83,16 +99,20 @@ module z_sled(explode=0, arrows=false)
 		}
 
 		right(cantilever_length) {
-			top_half() {
-				yrot(-bridge_arch_angle) {
-					// Back
-					left(rail_thick/2+10-0.1) {
-						upcube([rail_thick, z_joiner_spacing+joiner_width, rail_height]);
-					}
+			right(extra_offset) {
+				right(arch_offset) {
+					top_half() {
+						yrot(-bridge_arch_angle) {
+							// Back
+							left(rail_thick/2+10-0.1) {
+								upcube([rail_thick, z_joiner_spacing+joiner_width, rail_height]);
+							}
 
-					// Snap-tab front joiners.
-					up(rail_height/2) {
-						zrot(-90) joiner_pair(spacing=z_joiner_spacing, h=rail_height, w=joiner_width, l=10, a=joiner_angle);
+							// Snap-tab front joiners.
+							up(rail_height/2) {
+								zrot(-90) xspread(z_joiner_spacing) yrot(180) joiner(h=rail_height, w=joiner_width, l=10, a=joiner_angle);
+							}
+						}
 					}
 				}
 			}
