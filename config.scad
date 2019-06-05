@@ -34,6 +34,10 @@ motor_shaft_size    =  5;    // mm diameter of NEMA17 motor shaft.
 motor_shaft_length  = 20;    // mm length of exposed NEMA17 motor shaft.
 motor_shaft_flatted = true;  // Is motor shaft keyed? (RECOMMENDED)
 
+lifter_rod_diam     =   9.5;   // mm
+lifter_rod_length   = 310.0;   // mm
+lifter_rod_pitch    =   3.175 / 2; // mm lift per revolution
+
 lifter_screw_diam   = 60.0; // mm
 lifter_screw_thick  = 20.0; // mm
 lifter_screw_pitch  =  8.0; // mm lift per revolution
