@@ -565,7 +565,7 @@ module x_axis_assembly_2(explode=0, arrows=false)
 	}
 }
 //!x_axis_assembly_2(explode=100, arrows=true);
-
+//!x_axis_assembly_2();
 
 module x_axis_assembly_3(explode=0, arrows=false)
 {
@@ -656,9 +656,10 @@ module x_axis_assembly_6(xslidepos=0, yslidepos=0, explode=0, arrows=false)
 		right(explode*4) {
 			if ($children>2) children(2); else nil();
 			up(groove_height/2+rail_offset) {
-				y_axis_assembly_7(slidepos=yslidepos) {
-					if ($children>3) children(3);
-				}
+				// TJ: hide x and y platform
+				//y_axis_assembly_7(slidepos=yslidepos) {
+				//	if ($children>3) children(3);
+				//}
 			}
 
 			// Construction arrows.
@@ -1376,17 +1377,20 @@ module bridge_assembly_3(explode=0, arrows=false)
 	}
 }
 //!bridge_assembly_3(explode=100, arrows=true);
-bridge_assembly_3();
+//!bridge_assembly_3();
 
 
 module bridge_assembly_4(slidepos=0, explode=0, arrows=false)
 {
 	// view: [0, 0, 18] [55, 0, 25] 2100
 	// desc: Press fit the lifter screw onto the stepper motor shaft, making sure the flatted side matches that on the lifter screw shaft hole.  (The hole on the lifter screw rim is aligned with the flatted side.)  Apply mineral oil to the screw threads for lubrication.
-	nema17_stepper(h=motor_length, shaft_len=motor_shaft_length, $fa=1, $fs=0.5);
-	up(explode+lifter_screw_thick+5.05) {
-		zrot(-360*slidepos/lifter_screw_pitch-90) {
-			yrot(180) lifter_screw();
+	if (!lean_render)
+	{
+		nema17_stepper(h=motor_length, shaft_len=motor_shaft_length, $fa=1, $fs=0.5);
+		up(explode+lifter_screw_thick+5.05) {
+			zrot(-360*slidepos/lifter_screw_pitch-90) {
+				yrot(180) lifter_screw();
+			}
 		}
 	}
 
@@ -1408,36 +1412,39 @@ module bridge_assembly_5(slidepos=0, explode=0, arrows=false)
 	motor_width = nema_motor_width(17)+printer_slop*2;
 	arch_offset = rail_length*sin(bridge_arch_angle);
 	bridge_assembly_3();
-	down(explode*3-1) {
-		zring(r=(extruder_length+2*rail_length+2*cantilever_length)/2, n=2) {
-			xrot(180) zrot(-90) bridge_assembly_4(slidepos=slidepos);
-		}
+	if (!lean_render)
+	{
+		down(explode*3-1) {
+			zring(r=(extruder_length+2*rail_length+2*cantilever_length)/2, n=2) {
+				xrot(180) zrot(-90) bridge_assembly_4(slidepos=slidepos);
+			}
 
-		motor_spread = extruder_length + 2*rail_length + 2*cantilever_length - motor_width;
-		wiring([
-			[-motor_spread/2, 0, motor_length-5],
-			[-(motor_spread/2-5), 0, motor_length-5],
-			[-(motor_spread/2-5), 0, rail_thick+5],
-			[-(extruder_length/2+rail_length), 0, rail_thick+5],
-			[-(extruder_length/2+rail_length-30), 0, rail_thick+5],
-			[-(extruder_length/2+rail_length-30), -(z_joiner_spacing-joiner_width)/2, rail_thick+10],
-			[-(extruder_length/2+rail_length-30), -(z_joiner_spacing+joiner_width)/2, rail_thick+10]
-		], 4);
-		wiring([
-			[motor_spread/2, 0, motor_length-5],
-			[(motor_spread/2-5), 0, motor_length-5],
-			[(motor_spread/2-5), 0, rail_thick+5],
-			[(extruder_length/2+rail_length), 0, rail_thick+5],
-			[extruder_length/2-10, 0, rail_thick+5+arch_offset],
-			[extruder_length/2-10, rail_width/3-5, rail_thick+5+arch_offset],
-			[15, rail_width/3+5, rail_thick+10+arch_offset],
-			[-15, rail_width/3+5, rail_thick+10+arch_offset],
-			[-extruder_length/2+10, rail_width/3-5, rail_thick+5+arch_offset],
-			[-extruder_length/2+10, 0, rail_thick+5+arch_offset],
-			[-(extruder_length/2+rail_length/2), 0, rail_thick+5+arch_offset/2],
-			[-(extruder_length/2+rail_length-38), -(z_joiner_spacing-joiner_width)/2, rail_thick+12],
-			[-(extruder_length/2+rail_length-38), -(z_joiner_spacing+joiner_width)/2, rail_thick+12],
-		], 4);
+			motor_spread = extruder_length + 2*rail_length + 2*cantilever_length - motor_width;
+			wiring([
+				[-motor_spread/2, 0, motor_length-5],
+				[-(motor_spread/2-5), 0, motor_length-5],
+				[-(motor_spread/2-5), 0, rail_thick+5],
+				[-(extruder_length/2+rail_length), 0, rail_thick+5],
+				[-(extruder_length/2+rail_length-30), 0, rail_thick+5],
+				[-(extruder_length/2+rail_length-30), -(z_joiner_spacing-joiner_width)/2, rail_thick+10],
+				[-(extruder_length/2+rail_length-30), -(z_joiner_spacing+joiner_width)/2, rail_thick+10]
+			], 4);
+			wiring([
+				[motor_spread/2, 0, motor_length-5],
+				[(motor_spread/2-5), 0, motor_length-5],
+				[(motor_spread/2-5), 0, rail_thick+5],
+				[(extruder_length/2+rail_length), 0, rail_thick+5],
+				[extruder_length/2-10, 0, rail_thick+5+arch_offset],
+				[extruder_length/2-10, rail_width/3-5, rail_thick+5+arch_offset],
+				[15, rail_width/3+5, rail_thick+10+arch_offset],
+				[-15, rail_width/3+5, rail_thick+10+arch_offset],
+				[-extruder_length/2+10, rail_width/3-5, rail_thick+5+arch_offset],
+				[-extruder_length/2+10, 0, rail_thick+5+arch_offset],
+				[-(extruder_length/2+rail_length/2), 0, rail_thick+5+arch_offset/2],
+				[-(extruder_length/2+rail_length-38), -(z_joiner_spacing-joiner_width)/2, rail_thick+12],
+				[-(extruder_length/2+rail_length-38), -(z_joiner_spacing+joiner_width)/2, rail_thick+12],
+			], 4);
+		}
 	}
 
 	// Construction arrows.
@@ -1468,23 +1475,26 @@ module top_brace_assembly_1(explode=0, arrows=false)
 	// view: [0, -25, 55] [60, 0, 135] 400
 	// desc: Attach a limit microswitch, with wiring, to the Z rail endcap.  Orient the switch as shown.  Do this again to make another Z endcap.
 	rail_z_endcap();
-	up(rail_height-endstop_length/2-2) {
-		left(z_joiner_spacing/2-joiner_width/2-5-endstop_thick/2) {
-			back(explode-endstop_depth/2) {
-				zrot(180) xrot(90) {
-					microswitch();
-					wiring([
-						[0, 8, -10],
-						[-1, 7.9, -25],
-						[-25, -30, -25],
-						[-25, -30.01, 100],
-					], 1, fillet=10, wirenum=4);
-					wiring([
-						[0, -8, -10],
-						[0, -8.01, -25],
-						[-23, -30, -25],
-						[-23, -30.01, 100],
-					], 1, fillet=10, wirenum=5);
+	if (!lean_render)
+	{
+		up(rail_height-endstop_length/2-2) {
+			left(z_joiner_spacing/2-joiner_width/2-5-endstop_thick/2) {
+				back(explode-endstop_depth/2) {
+					zrot(180) xrot(90) {
+						microswitch();
+						wiring([
+							[0, 8, -10],
+							[-1, 7.9, -25],
+							[-25, -30, -25],
+							[-25, -30.01, 100],
+						], 1, fillet=10, wirenum=4);
+						wiring([
+							[0, -8, -10],
+							[0, -8.01, -25],
+							[-23, -30, -25],
+							[-23, -30.01, 100],
+						], 1, fillet=10, wirenum=5);
+					}
 				}
 			}
 		}
@@ -1613,18 +1623,21 @@ module final_assembly_2(xslidepos=0, yslidepos=0, zslidepos=0, explode=0, arrows
 		}
 		if ($children > 5) children(5);
 	}
-	wiring([
-		[-(motor_rail_length/2+rail_length+2*explode+platform_length+100), 0, rail_thick+10],
-		[-(motor_rail_length/2+rail_length+2*explode+platform_length-5), 0, rail_thick+10],
-		[-(motor_rail_length/2+rail_length+2*explode+15), 0, rail_thick+5],
-		[-motor_rail_length/2, 0, rail_thick+5],
-	], 4);
-	wiring([
-		[-(motor_rail_length/2+rail_length+2*explode+platform_length+100), +5, rail_thick+5],
-		[-(motor_rail_length/2+rail_length+2*explode+platform_length-5), +5, rail_thick+5],
-		[-(motor_rail_length/2+rail_length+2*explode+15), -rail_width/3, rail_thick+5],
-		[-motor_rail_length/2, -rail_width/3, rail_thick+5],
-	], 4);
+	if (!lean_render)
+	{
+		wiring([
+			[-(motor_rail_length/2+rail_length+2*explode+platform_length+100), 0, rail_thick+10],
+			[-(motor_rail_length/2+rail_length+2*explode+platform_length-5), 0, rail_thick+10],
+			[-(motor_rail_length/2+rail_length+2*explode+15), 0, rail_thick+5],
+			[-motor_rail_length/2, 0, rail_thick+5],
+		], 4);
+		wiring([
+			[-(motor_rail_length/2+rail_length+2*explode+platform_length+100), +5, rail_thick+5],
+			[-(motor_rail_length/2+rail_length+2*explode+platform_length-5), +5, rail_thick+5],
+			[-(motor_rail_length/2+rail_length+2*explode+15), -rail_width/3, rail_thick+5],
+			[-motor_rail_length/2, -rail_width/3, rail_thick+5],
+		], 4);
+	}
 }
 //!final_assembly_2(xslidepos=0, yslidepos=0, zslidepos=0, explode=0, arrows=true) z_sled();
 //!final_assembly_2(explode=100, arrows=true);
@@ -1697,23 +1710,26 @@ module final_assembly_4(xslidepos=0, yslidepos=0, zslidepos=0, explode=0, arrows
 		if ($children > 2) children(2);
 		if ($children > 3) children(3);
 	}
-	left(motor_rail_length/2+rail_length+platform_length) {
-		wiring([
-			[rail_thick+5.01, 0, rail_height+groove_height+z_base_height+2*rail_length+2*explode-95],
-			[rail_thick+5, 0, rail_thick+5],
-			[-100, 0, rail_thick+5],
-		], 2, fillet=9, wirenum=4);
-	}
-	right(motor_rail_length/2+rail_length+platform_length) {
-		wiring([
-			[-(rail_thick+5), 0, rail_height+groove_height+z_base_height+2*rail_length+2*explode-95],
-			[-(rail_thick+5.01), 0, rail_thick+5],
-			[-100, 0, rail_thick+5],
-		], 2, fillet=9, wirenum=4);
+	if (!lean_render)
+	{
+		left(motor_rail_length/2+rail_length+platform_length) {
+			wiring([
+				[rail_thick+5.01, 0, rail_height+groove_height+z_base_height+2*rail_length+2*explode-95],
+				[rail_thick+5, 0, rail_thick+5],
+				[-100, 0, rail_thick+5],
+			], 2, fillet=9, wirenum=4);
+		}
+		right(motor_rail_length/2+rail_length+platform_length) {
+			wiring([
+				[-(rail_thick+5), 0, rail_height+groove_height+z_base_height+2*rail_length+2*explode-95],
+				[-(rail_thick+5.01), 0, rail_thick+5],
+				[-100, 0, rail_thick+5],
+			], 2, fillet=9, wirenum=4);
+		}
 	}
 }
 //!final_assembly_4(explode=100, arrows=true);
-//!final_assembly_4();
+final_assembly_4();
 
 
 // Child 0: Left Z tower motherboard mount point.
